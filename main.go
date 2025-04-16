@@ -19,18 +19,18 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	
-	"github.com/alexflint/go-arg"
+
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
+	"github.com/alexflint/go-arg"
 	"github.com/dustin/go-humanize"
 )
 
 const (
 	defTemplate = "{{.title}} [GOG]"
 	sanRegexStr = `[\/:*?"><|]`
-	siteUrl = "https://www.gog.com"
-	userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/"+
+	siteUrl     = "https://www.gog.com"
+	userAgent   = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/" +
 		"537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
 )
 
@@ -41,8 +41,8 @@ var (
 
 var resolvePlatform = map[string]string{
 	"windows": "1,2,4,8,4096,16384",
-	"linux": "1024,2048,8192",
-	"mac": "16,32",
+	"linux":   "1024,2048,8192",
+	"mac":     "16,32",
 }
 
 var languages = []string{
@@ -58,7 +58,6 @@ func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	req.Header.Add("Origin", siteUrl)
 	return http.DefaultTransport.RoundTrip(req)
 }
-
 
 func (wc *WriteCounter) Write(p []byte) (int, error) {
 	var speed int64 = 0
@@ -165,7 +164,7 @@ func parseCfg() (*Config, error) {
 		cfg.FolderTemplate = args.FolderTemplate
 	}
 	if args.Goodies {
-		cfg.Goodies = args.Goodies 
+		cfg.Goodies = args.Goodies
 	}
 
 	if strings.TrimSpace(cfg.Platform) == "" || strings.TrimSpace(cfg.Language) == "" {
@@ -242,7 +241,7 @@ func setCookies(_cookies []*Cookie) error {
 }
 
 func checkCookies() (bool, error) {
-	req, err := client.Get(siteUrl+"/userData.json")
+	req, err := client.Get(siteUrl + "/userData.json")
 	if err != nil {
 		return false, err
 	}
@@ -251,15 +250,15 @@ func checkCookies() (bool, error) {
 		return false, errors.New(req.Status)
 	}
 	var obj UserData
-    err = json.NewDecoder(req.Body).Decode(&obj)
-    if err != nil {
-    	return false, err
-    }
-    ok := obj.IsLoggedIn
-    if ok {
-    	fmt.Println("Signed in as " + obj.Username + ".\n")
-    }
-    return ok, nil
+	err = json.NewDecoder(req.Body).Decode(&obj)
+	if err != nil {
+		return false, err
+	}
+	ok := obj.IsLoggedIn
+	if ok {
+		fmt.Println("Signed in as " + obj.Username + ".\n")
+	}
+	return ok, nil
 }
 
 func search(queryStr, platformIds, lang string) ([]Product, error) {
@@ -314,14 +313,14 @@ func search(queryStr, platformIds, lang string) ([]Product, error) {
 		}
 
 		pageNum++
-		time.Sleep(time.Second*1)
+		time.Sleep(time.Second * 1)
 	}
 	return products, nil
 }
 
 func getUserGameIdx(products []Product, prodLen int) (int, error) {
 	var (
-		idx int
+		idx  int
 		opts []string
 	)
 	for _, p := range products {
@@ -364,11 +363,11 @@ func getGameMeta(id int) (*GameMeta, error) {
 	}
 
 	var obj GameMeta
-    err = json.NewDecoder(req.Body).Decode(&obj)
-    if err != nil {
-    	return nil, err
-    }
-    return &obj, nil
+	err = json.NewDecoder(req.Body).Decode(&obj)
+	if err != nil {
+		return nil, err
+	}
+	return &obj, nil
 }
 
 func parseDownloads(meta *GameMeta, platform string, goodies bool) ([]*Download, error) {
@@ -383,7 +382,7 @@ func parseDownloads(meta *GameMeta, platform string, goodies bool) ([]*Download,
 		}
 		parsedDload := &Download{
 			ManualURL: siteUrl + d["manualUrl"].(string),
-			Name: 	   d["name"].(string), 
+			Name:      d["name"].(string),
 			Version:   ver,
 			Date:      d["date"].(string),
 			Size:      d["size"].(string),
@@ -395,7 +394,7 @@ func parseDownloads(meta *GameMeta, platform string, goodies bool) ([]*Download,
 		for _, e := range meta.Extras {
 			e.ManualURL = siteUrl + e.ManualURL
 			parsedDloads = append(parsedDloads, e)
-		}		
+		}
 	}
 
 	return parsedDloads, nil
@@ -415,7 +414,7 @@ func getLongestNameLen(downloads []*Download) int {
 func getUserDloadIndexes(downloads []*Download) ([]int, error) {
 	var (
 		indexes []int
-		opts []string
+		opts    []string
 	)
 	longestNameLen := getLongestNameLen(downloads)
 
@@ -423,9 +422,9 @@ func getUserDloadIndexes(downloads []*Download) ([]int, error) {
 		ver := d.Version
 		if ver == "" {
 			ver = "<no ver>"
-		} 
+		}
 		spaces := strings.Repeat(" ", longestNameLen-len(d.Name))
-		opts = append(opts, d.Name + spaces + " - " + ver + ", " + d.Size)
+		opts = append(opts, d.Name+spaces+" - "+ver+", "+d.Size)
 	}
 
 	prompt := &survey.MultiSelect{Options: opts}
@@ -498,7 +497,7 @@ func getBase(fname string) string {
 
 func parseTempMeta(title string) map[string]string {
 	parsed := map[string]string{
-		"title": title,
+		"title":        title,
 		"titlePeriods": strings.ReplaceAll(title, " ", "."),
 	}
 	return parsed
@@ -554,7 +553,7 @@ func downloadItem(download *Download, outPath string) error {
 		return err
 	}
 	req.Header.Add(
-		"Range", "bytes=" + strconv.FormatInt(startByte, 10) + "-")
+		"Range", "bytes="+strconv.FormatInt(startByte, 10)+"-")
 
 	do, err := client.Do(req)
 	if err != nil {
@@ -572,9 +571,9 @@ func downloadItem(download *Download, outPath string) error {
 
 	totalBytes := do.ContentLength + startByte
 	counter := &WriteCounter{
-		Total:     totalBytes,
-		TotalStr:  humanize.Bytes(uint64(totalBytes)),
-		StartTime: time.Now().UnixMilli(),
+		Total:      totalBytes,
+		TotalStr:   humanize.Bytes(uint64(totalBytes)),
+		StartTime:  time.Now().UnixMilli(),
 		Downloaded: startByte,
 	}
 
@@ -605,6 +604,19 @@ func main() {
 		panic(err)
 	}
 
+	// Parse CLI flags (including our new --login)
+	args := parseArgs()
+
+	// If the user asked to log in, perform the OAuth flow and exit
+	if args.Login {
+		if err := loginFlow(args.Username, args.Password); err != nil {
+			handleErr("Login failed", err, false)
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}
+
+	// Normal flow: parse config & args into Config
 	cfg, err := parseCfg()
 	if err != nil {
 		handleErr("failed to parse config/args", err, true)

@@ -2,23 +2,35 @@ package main
 
 type Transport struct{}
 
+// Token holds the GOG OAuth tokens for API calls and expiry.
+type Token struct {
+	AccessToken  string `json:"access_token"`
+	TokenType    string `json:"token_type"`
+	ExpiresIn    int64  `json:"expires_in"`
+	RefreshToken string `json:"refresh_token"`
+	Expiry       int64  `json:"expiry"` // Unix timestamp when this token expires
+}
+
 type Config struct {
-	Query		   string
-	Platform   	   string
-	Language 	   string
+	Query          string
+	Platform       string
+	Language       string
 	FolderTemplate string
-	Goodies		   bool
+	Goodies        bool
 	OutPath        string
-	PlatformIDs	   string
+	PlatformIDs    string
 }
 
 type Args struct {
-	Query    	   string `arg:"positional"`
-	Platform 	   string `arg:"-p, --platform" help:"Item platform. windows/win, linux, mac/osx."`
-	Language 	   string `arg:"-l, --language" help:"Item language.\n\t\t\t en, cz, de, es, fr, it, hu, nl, pl, pt, br, sv, tr, uk, ru, ar, ko, cn, jp, all."`
+	Login          bool   `arg:"--login" help:"Log in to GOG and save auth tokens/cookies"`
+	Username       string `arg:"--username" help:"GOG username (if not prompting)"`
+	Password       string `arg:"--password" help:"GOG password (if not prompting)"`
+	Query          string `arg:"positional"`
+	Platform       string `arg:"-p, --platform" help:"Item platform. windows/win, linux, mac/osx."`
+	Language       string `arg:"-l, --language" help:"Item language.\n\t\t\t en, cz, de, es, fr, it, hu, nl, pl, pt, br, sv, tr, uk, ru, ar, ko, cn, jp, all."`
 	FolderTemplate string `arg:"-t, --template" help:"Game folder naming template. title, titlePeriods.\n\t\t\t Ex: {{.title}} [GOG], {{.titlePeriods}}.GOG"`
-	Goodies 	   bool	  `arg:"-g, --goodies" help:"Include goodies."`
-	OutPath  	   string `arg:"-o, --out-path" help:"Where to download to. Path will be made if it doesn't already exist."`
+	Goodies        bool   `arg:"-g, --goodies" help:"Include goodies."`
+	OutPath        string `arg:"-o, --out-path" help:"Where to download to. Path will be made if it doesn't already exist."`
 }
 
 type Cookie struct {
@@ -135,7 +147,7 @@ type Search struct {
 		Name         string `json:"name"`
 		ProductCount string `json:"productCount"`
 	} `json:"tags"`
-	Products []Product
+	Products                   []Product
 	UpdatedProductsCount       int `json:"updatedProductsCount"`
 	HiddenUpdatedProductsCount int `json:"hiddenUpdatedProductsCount"`
 	AppliedFilters             struct {
@@ -151,7 +163,7 @@ type GameMeta struct {
 	TextInformation        string          `json:"textInformation"`
 	Downloads              [][]interface{} `json:"downloads"`
 	GalaxyDownloads        []interface{}   `json:"galaxyDownloads"`
-	Extras          	   []*Download      `json:"extras"`
+	Extras                 []*Download     `json:"extras"`
 	Dlcs                   []interface{}   `json:"dlcs"`
 	Tags                   []interface{}   `json:"tags"`
 	IsPreOrder             bool            `json:"isPreOrder"`

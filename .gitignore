@@ -1,0 +1,37 @@
+# Ignore specific files
+library_updates_do not use.bak
+
+# Ignore directories
+build/
+dist/
+.history/
+
+# Ignore specific filetypes
+*.bak
+*.bat
+*.bin
+*.csv
+*.dat
+*.dump
+*.exe
+*.html
+*.json
+*.jpg
+*.log
+*.log.*
+*.png
+*.pyc
+*.spec
+*.tmp
+*.txt
+*.yaml
+*.yml
+*.zip
+
+# Ignore cookies
+*cookies*
+*cookies*.*
+cookies
+cookies*
+cookies*.*
+cookies.*
